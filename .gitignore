@@ -1,2 +1,4 @@
 virtual/
 .env
+*.pyc
+*pyo
