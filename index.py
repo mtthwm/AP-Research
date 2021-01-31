@@ -9,10 +9,10 @@ twitter.clear_rules()
 
 twitter.add_rule('Posts with images', has=['images'])
 
-for x in twitter.get_rules():
-    print(x) 
+rules = twitter.get_rules()
+print(rules)
+for x in rules:
+    print(x)
+# tweet_stream = twitter.open_stream()
 
-# for response_line in twitter.open_stream():
-#     if response_line:
-#         json_response = json.loads(response_line)
-#         print(json.dumps(json_response, indent=4, sort_keys=True))
+# print(next(tweet_stream))

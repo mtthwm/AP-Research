@@ -6,12 +6,12 @@ class TwitterAPI:
         self.session = requests.Session()
         self.session.headers.update({'Authorization': f'Bearer {token}', 'Content-Type': 'application/json'})
 
-    def open_stream (self):
+    def open_stream (self, tweet_fields=[]):
         url = 'https://api.twitter.com/2/tweets/search/stream'
         response = self.session.get(url, stream=True)
         return response.iter_lines()
 
-    def add_rule (self, tag, value='', has=[]):
+    def add_rule (self, tag, value, has=[]):
         url = 'https://api.twitter.com/2/tweets/search/stream/rules'
         data = {
             'add': [
@@ -21,6 +21,7 @@ class TwitterAPI:
         for x in has:
             data['add'][0]['value'] += f'has:{x}'
         response = self.session.post(url, json=data)
+        print(response.text)
         return response
 
     def get_rules (self):
@@ -41,9 +42,7 @@ class TwitterAPI:
                 'ids': rule_ids
             }
         }
-        print(data)
         response = self.session.post(url, json=data)
-        print(response.json())
         return True
 
 class StreamRule:
