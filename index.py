@@ -5,14 +5,13 @@ import json
 from utils.TwitterAPI import TwitterAPI
 
 twitter = TwitterAPI(os.getenv('TWITTER_API_BEARER_TOKEN'))
-twitter.clear_rules()
+# twitter.clear_rules()
 
-twitter.add_rule('Posts with images', has=['images'])
+# twitter.add_rule('Posts with images', 'landscape', has=['images'])
 
-rules = twitter.get_rules()
-print(rules)
-for x in rules:
-    print(x)
-# tweet_stream = twitter.open_stream()
+# rules = twitter.get_rules()
 
-# print(next(tweet_stream))
+print("HELLO?")
+tweet_stream = twitter.open_stream(expansions='attachments.media_keys', media__fields=['url'])
+
+print(next(tweet_stream))

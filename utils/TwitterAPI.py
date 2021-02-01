@@ -6,8 +6,17 @@ class TwitterAPI:
         self.session = requests.Session()
         self.session.headers.update({'Authorization': f'Bearer {token}', 'Content-Type': 'application/json'})
 
-    def open_stream (self, tweet_fields=[]):
+    def open_stream (self, **kwargs):
         url = 'https://api.twitter.com/2/tweets/search/stream'
+        if kwargs:
+            url += '?'
+            for x in kwargs.keys():
+                value = kwargs[x]
+                if isinstance(value, list):
+                    param = ",".join(value)
+                else:
+                    param = value
+                url += f"{x.replace('__', '.')}={param}&"
         response = self.session.get(url, stream=True)
         return response.iter_lines()
 
