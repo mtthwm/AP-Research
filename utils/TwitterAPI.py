@@ -1,4 +1,5 @@
 import requests
+import json
 
 class TwitterAPI:
     def __init__(self, token):
@@ -17,8 +18,13 @@ class TwitterAPI:
                 else:
                     param = value
                 url += f"{x.replace('__', '.')}={param}&"
+        print(url)
         response = self.session.get(url, stream=True)
-        return response.iter_lines()
+        iter_lines = response.iter_lines()
+        def gen ():
+            for x in iter_lines:
+                yield json.loads(x)
+        return gen()
 
     def add_rule (self, tag, value, has=[]):
         url = 'https://api.twitter.com/2/tweets/search/stream/rules'
