@@ -1,10 +1,18 @@
+import shutil
+import os
+from PIL import Image
+import requests
+from memory_profiler import profile
+
 def download_url_image (url, path):
     filename = os.path.join(path, url.split('/')[-1])
     r = requests.get(url, stream=True)
     r.raw.decode_content = True
-    with open(filename, 'w') as file:
+    with open(filename, 'wb') as file:
         shutil.copyfileobj(r.raw, file)
+        return filename
 
+@profile
 def arnold_cat_map (filename:str, outname:str):
     MAX_WIDTH = 512
     MAX_HEIGHT = 512

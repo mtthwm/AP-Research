@@ -23,7 +23,8 @@ class TwitterAPI:
         iter_lines = response.iter_lines()
         def gen ():
             for x in iter_lines:
-                yield json.loads(x)
+                if x:
+                    yield json.loads(x)
         return gen()
 
     def add_rule (self, tag, value, has=[]):
@@ -36,7 +37,6 @@ class TwitterAPI:
         for x in has:
             data['add'][0]['value'] += f'has:{x}'
         response = self.session.post(url, json=data)
-        print(response.text)
         return response
 
     def get_rules (self):
