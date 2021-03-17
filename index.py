@@ -27,5 +27,3 @@ for x in tweet_stream:
         arnold_cat_map(local_image_name, os.path.join(FINAL_IMG_DIR, datetime.now().strftime("%m%d%Y%M%S%f")+".png"))
     except KeyError as e:
         print('DOES NOT CONTAIN MEDIA')
-
-arnold_cat_map('images/originals/doggo.jpg', 'images/final/doggo.jpg')
