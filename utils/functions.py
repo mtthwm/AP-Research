@@ -13,7 +13,7 @@ def download_url_image (url, path):
         return filename
 
 @profile
-def arnold_cat_map (filename:str, outname:str):
+def arnold_cat_map (filename:str, outname:str, append_to_text_file=None):
     MAX_WIDTH = 512
     MAX_HEIGHT = 512
 
@@ -64,9 +64,15 @@ def arnold_cat_map (filename:str, outname:str):
     xDir = 1
     yDir = 1
     passedCorner = False
+    file = None
+    if append_to_text_file:
+        file = open(append_to_text_file, "a")
     for i in range(count.width**2):
+        pix = count.getpixel((x, y))
+        if file:
+            file.write(str(pix))
         zag.putpixel((i % count.width, int(i / count.width)),
-                     count.getpixel((x, y)))
+                     pix)
 
         doSwapY = y - yDir < 0 or y - yDir >= count.height
         doSwapX = x + xDir >= count.width or x + xDir < 0
@@ -90,4 +96,7 @@ def arnold_cat_map (filename:str, outname:str):
             yDir *= -1
             xDir *= -1
 
+    if file:
+        file.close()
     zag.save(outname)
+    return outname

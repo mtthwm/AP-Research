@@ -18,7 +18,6 @@ class TwitterAPI:
                 else:
                     param = value
                 url += f"{x.replace('__', '.')}={param}&"
-        print(url)
         response = self.session.get(url, stream=True)
         iter_lines = response.iter_lines()
         def gen ():
