@@ -5,13 +5,15 @@ import requests
 from memory_profiler import profile
 from time import time
 
-def download_url_image (url, path):
-    filename = os.path.join(path, url.split('/')[-1])
+def download_url_image (url, filename):
     r = requests.get(url, stream=True)
     r.raw.decode_content = True
     with open(filename, 'wb') as file:
         shutil.copyfileobj(r.raw, file)
         return filename
+
+def check_image_downloaded_previously(filename):
+    return os.path.exists(filename)
 
 def arnold_cat_map (filename:str, outname:str, append_to_text_file=None):
     MAX_WIDTH = 512

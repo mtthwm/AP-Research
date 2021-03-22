@@ -27,9 +27,14 @@ def main (txt_file:str, num_blocks:int=1):
             break
         try:
             y = x['includes']['media'][0]
-            local_image_name = download_url_image(y['url'], ORIGINAL_IMG_DIR)
-            image_paths.append(arnold_cat_map(local_image_name, os.path.join(FINAL_IMG_DIR, datetime.now().strftime("%m%d%Y%M%S%f")+".png"), txt_file))
-            local_image_name = ""
+            url = y['url']
+            filename = os.path.join(ORIGINAL_IMG_DIR, url.split('/')[-1])
+            if os.path.exists(filename):
+                print("Image has been downloaded previously.")                
+            else:
+                local_image_name = download_url_image(url, filename)
+                image_paths.append(arnold_cat_map(local_image_name, os.path.join(FINAL_IMG_DIR, datetime.now().strftime("%m%d%Y%H%M%S%f")+".png"), txt_file))
+                local_image_name = ""
         except KeyError as e:
             print('DOES NOT CONTAIN MEDIA')
             pass
@@ -37,7 +42,7 @@ def main (txt_file:str, num_blocks:int=1):
     for i in image_paths:
         print(i)
 
-filename = os.path.join("data/", datetime.now().strftime("%m-%d-%Y[%M%S]") + ".txt")
+filename = os.path.join("data/", datetime.now().strftime("%m-%d-%Y(%H%M%S)") + ".txt")
 try:
     main(filename, num_blocks=int(sys.argv[1]))
 except IndexError:
