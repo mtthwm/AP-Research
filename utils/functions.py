@@ -3,6 +3,7 @@ import os
 from PIL import Image
 import requests
 from memory_profiler import profile
+from time import time
 
 def download_url_image (url, path):
     filename = os.path.join(path, url.split('/')[-1])
@@ -12,10 +13,11 @@ def download_url_image (url, path):
         shutil.copyfileobj(r.raw, file)
         return filename
 
-@profile
 def arnold_cat_map (filename:str, outname:str, append_to_text_file=None):
     MAX_WIDTH = 512
     MAX_HEIGHT = 512
+    start_time = time()
+    bits_generated = 0
 
     p = 1
     q = 1
@@ -69,6 +71,7 @@ def arnold_cat_map (filename:str, outname:str, append_to_text_file=None):
         file = open(append_to_text_file, "a")
     for i in range(count.width**2):
         pix = count.getpixel((x, y))
+        bits_generated += 1
         if file:
             file.write(str(pix))
         zag.putpixel((i % count.width, int(i / count.width)),
@@ -99,4 +102,7 @@ def arnold_cat_map (filename:str, outname:str, append_to_text_file=None):
     if file:
         file.close()
     zag.save(outname)
+
+    end_time = time() - start_time
+    print(f"Generated {outname} ({bits_generated}bit) in {end_time} ms. {bits_generated / (end_time/1000)} bit/sec")
     return outname

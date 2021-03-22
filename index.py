@@ -7,6 +7,7 @@ from utils.TwitterAPI import TwitterAPI
 from PIL import Image
 from utils.functions import arnold_cat_map, download_url_image
 from datetime import datetime
+import sys
 
 def main (txt_file:str, num_blocks:int=1):
     ORIGINAL_IMG_DIR = 'images/originals/'
@@ -24,17 +25,22 @@ def main (txt_file:str, num_blocks:int=1):
     for x in tweet_stream:
         if len(image_paths) >= num_blocks:
             break
-        local_image_name = ""
         try:
-            for y in x['includes']['media']:
-                local_image_name = download_url_image(y['url'], ORIGINAL_IMG_DIR)
-                break
+            y = x['includes']['media'][0]
+            local_image_name = download_url_image(y['url'], ORIGINAL_IMG_DIR)
             image_paths.append(arnold_cat_map(local_image_name, os.path.join(FINAL_IMG_DIR, datetime.now().strftime("%m%d%Y%M%S%f")+".png"), txt_file))
+            local_image_name = ""
         except KeyError as e:
             print('DOES NOT CONTAIN MEDIA')
+            pass
 
     for i in image_paths:
         print(i)
 
 filename = os.path.join("data/", datetime.now().strftime("%m-%d-%Y[%M%S]") + ".txt")
-main(filename, num_blocks=2)
+try:
+    main(filename, num_blocks=int(sys.argv[1]))
+except IndexError:
+    raise Exception("Please include block number.")
+except ValueError:
+    raise Exception("Invalid value for block number.")
