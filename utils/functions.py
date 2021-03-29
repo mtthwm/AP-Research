@@ -15,7 +15,7 @@ def download_url_image (url, filename):
 def check_image_downloaded_previously(filename):
     return os.path.exists(filename)
 
-def arnold_cat_map (filename:str, outname:str, append_to_text_file=None):
+def arnold_cat_map (filename:str, outname:str, retain_final, append_to_text_file=None):
     MAX_WIDTH = 512
     MAX_HEIGHT = 512
     start_time = time()
@@ -61,7 +61,8 @@ def arnold_cat_map (filename:str, outname:str, append_to_text_file=None):
             count.putpixel((int(x / 4), int(y / 4)),
                            1 if pix_sum % 2 == 0 else 0)
 
-    zag = Image.new('1', (count.height, count.width))
+    if retain_final:
+        zag = Image.new('1', (count.height, count.width))
 
     x = 0
     y = 0
@@ -76,8 +77,8 @@ def arnold_cat_map (filename:str, outname:str, append_to_text_file=None):
         bits_generated += 1
         if file:
             file.write(str(pix))
-        zag.putpixel((i % count.width, int(i / count.width)),
-                     pix)
+        if retain_final:
+            zag.putpixel((i % count.width, int(i / count.width)), pix)
 
         doSwapY = y - yDir < 0 or y - yDir >= count.height
         doSwapX = x + xDir >= count.width or x + xDir < 0
@@ -103,7 +104,8 @@ def arnold_cat_map (filename:str, outname:str, append_to_text_file=None):
 
     if file:
         file.close()
-    zag.save(outname)
+    if retain_final:
+        zag.save(outname)
 
     seq = GeneratedSequence(outname, bits_generated, time() - start_time)
     print(f"Generated {seq.outname} ({len(seq)} bits) in {seq.generation_time} ms. {seq.bit_rate} bit/sec")

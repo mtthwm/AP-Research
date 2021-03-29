@@ -10,7 +10,7 @@ from datetime import datetime
 import sys
 from time import time
 
-def main (txt_file:str, num_blocks:int=1):
+def main (txt_file:str, num_blocks:int, search_term:str, retain_originals:bool, retain_finals:bool):
     ORIGINAL_IMG_DIR = 'images/originals/'
     FINAL_IMG_DIR = 'images/final/'
 
@@ -41,10 +41,12 @@ def main (txt_file:str, num_blocks:int=1):
             else:
                 local_image_name = download_url_image(url, filename)
                 total_bits_generated
-                seq = arnold_cat_map(local_image_name, os.path.join(FINAL_IMG_DIR, datetime.now().strftime("%m%d%Y%H%M%S%f")+f"({image_id}).png"), txt_file)
+                outname =  datetime.now().strftime("%m%d%Y%H%M%S%f")+f"({image_id}).png"
+                seq = arnold_cat_map(local_image_name, os.path.join(FINAL_IMG_DIR, outname), retain_finals, txt_file)
                 total_bits_generated = total_bits_generated + len(seq)
                 image_paths.append(seq.outname)
-                local_image_name = ""
+                if not retain_originals:
+                    os.remove(local_image_name)
         except KeyError as e:
             print('DOES NOT CONTAIN MEDIA')
             pass
@@ -57,7 +59,17 @@ def main (txt_file:str, num_blocks:int=1):
 
 filename = os.path.join("data/", datetime.now().strftime("%m-%d-%Y(%H%M%S)") + ".txt")
 try:
-    main(filename, num_blocks=int(sys.argv[1]))
+    search_term = "nature"
+    retain_originals = False
+    retain_finals = False
+    try:
+        search_term = sys.argv[2]
+        retain_originals = sys.argv[3].lower() == "true"
+        retain_finals = sys.argv[4].lower() == "true"
+    except:
+        pass
+
+    main(filename, num_blocks=int(sys.argv[1]), search_term=search_term, retain_originals=retain_originals, retain_finals=retain_finals)
 except IndexError:
     raise Exception("Please include block number.")
 except ValueError:
