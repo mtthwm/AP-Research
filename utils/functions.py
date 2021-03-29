@@ -117,7 +117,7 @@ class GeneratedSequence:
         self.outname = outname
         self._length = length
         self.generation_time = generation_time
-        self.bit_rate = len(self) / (generation_time/1000)
+        self.bit_rate = len(self) / generation_time
 
     def __len__(self):
         return self._length

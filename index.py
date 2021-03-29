@@ -55,7 +55,7 @@ def main (txt_file:str, num_blocks:int, search_term:str, retain_originals:bool, 
     print("\nGenerated: ")
     for i in image_paths:
         print(i)
-    print(f"({total_bits_generated} bits) in {time_elapsed} ms. {total_bits_generated / (time_elapsed / 1000)} bits/sec")
+    print(f"({total_bits_generated} bits) in {time_elapsed} sec. {total_bits_generated / time_elapsed} bits/sec")
 
 filename = os.path.join("data/", datetime.now().strftime("%m-%d-%Y(%H%M%S)") + ".txt")
 try:
