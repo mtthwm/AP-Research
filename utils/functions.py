@@ -105,6 +105,17 @@ def arnold_cat_map (filename:str, outname:str, append_to_text_file=None):
         file.close()
     zag.save(outname)
 
-    end_time = time() - start_time
-    print(f"Generated {outname} ({bits_generated}bit) in {end_time} ms. {bits_generated / (end_time/1000)} bit/sec")
-    return outname
+    seq = GeneratedSequence(outname, bits_generated, time() - start_time)
+    print(f"Generated {seq.outname} ({len(seq)} bits) in {seq.generation_time} ms. {seq.bit_rate} bit/sec")
+    return seq
+
+
+class GeneratedSequence:
+    def __init__(self, outname, length, generation_time):
+        self.outname = outname
+        self._length = length
+        self.generation_time = generation_time
+        self.bit_rate = len(self) / (generation_time/1000)
+
+    def __len__(self):
+        return self._length
