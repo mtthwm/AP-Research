@@ -16,8 +16,6 @@ def check_image_downloaded_previously(filename):
     return os.path.exists(filename)
 
 def arnold_cat_map (filename:str, outname:str, retain_final, append_to_text_file=None):
-    # MAX_WIDTH = 512
-    # MAX_HEIGHT = 512
     start_time = time()
     bits_generated = 0
 
@@ -25,21 +23,12 @@ def arnold_cat_map (filename:str, outname:str, retain_final, append_to_text_file
     q = 1
 
     original = Image.open(filename).convert('1')
+    size = min((original.height, original.width))
     top = 0
-    bottom = original.height - (original.height % 4)
+    bottom = size - (size % 4)
     left = 0
-    right = original.width - (original.width % 4)
+    right = size - (size % 4)
     original = original.crop((left, top, right, bottom))
-
-    # width = im.width
-    # height = im.height
-    # yModifier = (height - MAX_WIDTH) / 2
-    # xModifier = (width - MAX_HEIGHT) / 2
-    # top = yModifier
-    # bottom = height - yModifier
-    # left = xModifier
-    # right = width - xModifier
-    # cropped = im.crop((left, top, right, bottom))
 
     new = Image.new('1', (original.width, original.height))
 
