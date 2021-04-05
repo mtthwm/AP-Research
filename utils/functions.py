@@ -16,38 +16,43 @@ def check_image_downloaded_previously(filename):
     return os.path.exists(filename)
 
 def arnold_cat_map (filename:str, outname:str, retain_final, append_to_text_file=None):
-    MAX_WIDTH = 512
-    MAX_HEIGHT = 512
+    # MAX_WIDTH = 512
+    # MAX_HEIGHT = 512
     start_time = time()
     bits_generated = 0
 
     p = 1
     q = 1
 
-    im = Image.open(filename).convert('1')
+    original = Image.open(filename).convert('1')
+    top = 0
+    bottom = original.height - (original.height % 4)
+    left = 0
+    right = original.width - (original.width % 4)
+    original = original.crop((left, top, right, bottom))
 
-    width = im.width
-    height = im.height
-    yModifier = (height - MAX_WIDTH) / 2
-    xModifier = (width - MAX_HEIGHT) / 2
-    top = yModifier
-    bottom = height - yModifier
-    left = xModifier
-    right = width - xModifier
-    cropped = im.crop((left, top, right, bottom))
+    # width = im.width
+    # height = im.height
+    # yModifier = (height - MAX_WIDTH) / 2
+    # xModifier = (width - MAX_HEIGHT) / 2
+    # top = yModifier
+    # bottom = height - yModifier
+    # left = xModifier
+    # right = width - xModifier
+    # cropped = im.crop((left, top, right, bottom))
 
-    new = Image.new('1', (cropped.width, cropped.height))
+    new = Image.new('1', (original.width, original.height))
 
-    for y in range(cropped.height):
-        for x in range(cropped.width):
-            px = cropped.getpixel((x, y))
-            N = cropped.width
+    for y in range(original.height):
+        for x in range(original.width):
+            px = original.getpixel((x, y))
+            N = original.width
             newX = (x + y * p) % N
             newY = (x * q + y * (p * q + 1)) % N
             new.putpixel((newX, newY), px)
 
-    count_width = int(cropped.width / 4)
-    count_height = int(cropped.height / 4)
+    count_width = int(original.width / 4)
+    count_height = int(original.height / 4)
 
     count = Image.new('1', (count_width, count_height))
 
@@ -72,7 +77,7 @@ def arnold_cat_map (filename:str, outname:str, retain_final, append_to_text_file
     file = None
     if append_to_text_file:
         file = open(append_to_text_file, "a")
-    for i in range(count.width**2):
+    for i in range(count.width*count.height):
         pix = count.getpixel((x, y))
         bits_generated += 1
         if file:

@@ -9,6 +9,7 @@ from utils.functions import arnold_cat_map, download_url_image
 from datetime import datetime
 import sys
 from time import time
+from utils.CommandLineArgs import CommandLineArgs
 
 def main (txt_file:str, num_blocks:int, search_term:str, retain_originals:bool, retain_finals:bool):
     ORIGINAL_IMG_DIR = 'images/originals/'
@@ -58,19 +59,7 @@ def main (txt_file:str, num_blocks:int, search_term:str, retain_originals:bool, 
     print(f"({total_bits_generated} bits) in {time_elapsed} sec. {total_bits_generated / time_elapsed} bits/sec")
 
 filename = os.path.join("data/", datetime.now().strftime("%m-%d-%Y(%H%M%S)") + ".txt")
-try:
-    search_term = "nature"
-    retain_originals = False
-    retain_finals = False
-    try:
-        search_term = sys.argv[2]
-        retain_originals = sys.argv[3].lower() == "true"
-        retain_finals = sys.argv[4].lower() == "true"
-    except:
-        pass
 
-    main(filename, num_blocks=int(sys.argv[1]), search_term=search_term, retain_originals=retain_originals, retain_finals=retain_finals)
-except IndexError:
-    raise Exception("Please include block number.")
-except ValueError:
-    raise Exception("Invalid value for block number.")
+args = CommandLineArgs(sys.argv, 'file:str:!', 'num_blocks:int:!', 'search_term:str:nature', 'retain_originals:bool:False', 'retain_finals:bool:False')
+print(args.get('num_blocks'))
+main(filename, num_blocks=args.get('num_blocks'), search_term=args.get('search_term'), retain_originals=args.get('retain_originals'), retain_finals=args.get('retain_finals'))
