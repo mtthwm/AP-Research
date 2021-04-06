@@ -2,6 +2,6 @@ virtual/
 .env
 *.pyc
 *pyo
-data/*
 images/final/*
 images/originals/*
+data/*
