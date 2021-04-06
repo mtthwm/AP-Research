@@ -41,7 +41,6 @@ def main (txt_file:str, num_blocks:int, search_term:str, retain_originals:bool, 
                 print("Image has been downloaded previously.")                
             else:
                 local_image_name = download_url_image(url, filename)
-                total_bits_generated
                 outname =  datetime.now().strftime("%m%d%Y%H%M%S%f")+f"({image_id}).png"
                 seq = arnold_cat_map(local_image_name, os.path.join(FINAL_IMG_DIR, outname), retain_finals, txt_file)
                 total_bits_generated = total_bits_generated + len(seq)
