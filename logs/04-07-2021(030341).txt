@@ -1,5 +1,0 @@
-INFO:root:Generated images/final/04072021030344844010(EyTfb60XIAEtmih).png (20736 bits) in 0.8479907512664795 ms. 24453.096887001015 bit/sec
-INFO:root:
-Generated: 
-INFO:root:images/final/04072021030344844010(EyTfb60XIAEtmih).png
-INFO:root:(20736 bits) in 8.173560380935669 sec. 2536.960520701047 bits/sec
