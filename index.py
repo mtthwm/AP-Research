@@ -12,7 +12,7 @@ from time import time
 from utils.CommandLineArgs import CommandLineArgs
 from concurrent.futures import ThreadPoolExecutor
 
-def main (txt_file:str, num_blocks:int, search_term:str, retain_originals:bool, retain_finals:bool):
+def main (txt_file:str, sequence_length:int, search_term:str, retain_originals:bool, retain_finals:bool):
     ORIGINAL_IMG_DIR = 'images/originals/'
     FINAL_IMG_DIR = 'images/final/'
 
@@ -31,7 +31,7 @@ def main (txt_file:str, num_blocks:int, search_term:str, retain_originals:bool, 
            
     executor = ThreadPoolExecutor()
     for x in tweet_stream:
-        if len(image_paths) >= num_blocks:
+        if total_bits_generated >= sequence_length:
             break
         try:
             y = x['includes']['media'][0]
@@ -62,6 +62,6 @@ def main (txt_file:str, num_blocks:int, search_term:str, retain_originals:bool, 
 
 filename = os.path.join("data/", datetime.now().strftime("%m-%d-%Y(%H%M%S)") + ".txt")
 
-args = CommandLineArgs(sys.argv, 'file:str:!', 'num_blocks:int:!', 'retain_originals:bool:False', 'retain_finals:bool:False', 'search_term:str:yellowstone')
+args = CommandLineArgs(sys.argv, 'file:str:!', 'sequence_length:int:!', 'retain_originals:bool:False', 'retain_finals:bool:False', 'search_term:str:yellowstone')
 print(args._arguments)
-main(filename, num_blocks=args.get('num_blocks'), search_term=args.get('search_term'), retain_originals=args.get('retain_originals'), retain_finals=args.get('retain_finals'))
+main(filename, sequence_length=args.get('sequence_length'), search_term=args.get('search_term'), retain_originals=args.get('retain_originals'), retain_finals=args.get('retain_finals'))
