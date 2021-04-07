@@ -4,6 +4,7 @@ from PIL import Image
 import requests
 from memory_profiler import profile
 from time import time
+from datetime import datetime
 
 def download_url_image (url, filename):
     r = requests.get(url, stream=True)
@@ -15,7 +16,7 @@ def download_url_image (url, filename):
 def check_image_downloaded_previously(filename):
     return os.path.exists(filename)
 
-def arnold_cat_map (filename:str, outname:str, retain_final, append_to_text_file=None):
+def arnold_cat_map (filename:str, outname:str, retain_final:bool, image_key:str, sequence_id:int, append_to_text_file=None):
     start_time = time()
     bits_generated = 0
 
@@ -101,17 +102,20 @@ def arnold_cat_map (filename:str, outname:str, retain_final, append_to_text_file
     if retain_final:
         zag.save(outname)
 
-    seq = GeneratedSequence(outname, bits_generated, time() - start_time)
+    seq = GeneratedSequence(outname=outname, length=bits_generated, generation_time=time() - start_time, image_key=image_key, sequence_id=sequence_id)
     print(f"Generated {seq.outname} ({len(seq)} bits) in {seq.generation_time} ms. {seq.bit_rate} bit/sec")
     return seq
 
 
 class GeneratedSequence:
-    def __init__(self, outname, length, generation_time):
+    def __init__(self, outname, length, generation_time, image_key, sequence_id):
         self.outname = outname
         self._length = length
         self.generation_time = generation_time
         self.bit_rate = len(self) / generation_time
+        self.image_key = image_key
+        self.sequence_id = sequence_id
+        self.time_generated = datetime.now()
 
     def __len__(self):
         return self._length

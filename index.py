@@ -11,6 +11,9 @@ import sys
 from time import time
 from utils.CommandLineArgs import CommandLineArgs
 from concurrent.futures import ThreadPoolExecutor
+from utils.Database import Database
+
+db = Database(os.getenv('LOG_DB_NAME'))
 
 txt_file = os.path.join("data/", datetime.now().strftime("%m-%d-%Y(%H%M%S)") + ".txt")
 
@@ -35,6 +38,7 @@ image_paths = []
 
 total_bits_generated = 0
 
+sequence_id = db.start_sequence(datetime.now())
 start_time = time()
         
 executor = ThreadPoolExecutor()
@@ -55,7 +59,8 @@ for x in tweet_stream:
             else:
                 local_image_name = download_url_image(url, filename)
                 outname =  datetime.now().strftime("%m%d%Y%H%M%S%f")+f"({image_id}).png"
-                seq = arnold_cat_map(local_image_name, os.path.join(FINAL_IMG_DIR, outname), retain_finals, txt_file)
+                seq = arnold_cat_map(filename=local_image_name, outname=os.path.join(FINAL_IMG_DIR, outname), retain_final=retain_finals, image_key=image_id, sequence_id=sequence_id, append_to_text_file=txt_file)
+                db.create_image(seq)
                 total_bits_generated = total_bits_generated + len(seq)
                 image_paths.append(seq.outname)
                 if not retain_originals:
@@ -68,6 +73,8 @@ for x in tweet_stream:
         pass
 
 time_elapsed = time() - start_time
+bit_rate = total_bits_generated / time_elapsed
+db.end_sequence(sequence_id, total_bits_generated, time_elapsed, bit_rate, datetime.now())
 print("\nGenerated: ")
 for i in image_paths:
     print(i)
