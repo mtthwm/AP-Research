@@ -37,7 +37,6 @@ class Database:
         return self.cur.lastrowid
 
     def start_sequence (self, time_started:datetime):
-        print(type(time_started), time_started)
         self.cur.execute('''INSERT INTO sequence (time_started) VALUES (?)''', (time_started,))
         self.conn.commit()
         return self.cur.lastrowid

@@ -12,13 +12,20 @@ from time import time
 from utils.CommandLineArgs import CommandLineArgs
 from concurrent.futures import ThreadPoolExecutor
 from utils.Database import Database
+import logging
+logging.basicConfig(filename=os.path.join('logs/', datetime.now().strftime("%m-%d-%Y(%H%M%S)") + ".txt"), level=logging.INFO)
+logging.getLogger().addHandler(logging.StreamHandler()) #https://stackoverflow.com/questions/13733552/logger-configuration-to-log-to-file-and-print-to-stdout
 
 db = Database(os.getenv('LOG_DB_NAME'))
+
+def log_exception_handler (type, value, tb):
+    logging.exception(f"Uncaught exception: {str(value)}")
+
+sys.excepthook = log_exception_handler
 
 txt_file = os.path.join("data/", datetime.now().strftime("%m-%d-%Y(%H%M%S)") + ".txt")
 
 args = CommandLineArgs(sys.argv, 'file:str:!', 'sequence_length:int:!', 'retain_originals:bool:False', 'retain_finals:bool:False', 'hashtag:str:photography')
-print(args._arguments)
 sequence_length = args.get('sequence_length') 
 hashtag = args.get('hashtag')
 retain_originals = args.get('retain_originals')
@@ -54,28 +61,24 @@ for x in tweet_stream:
             remote_filename = url.split('/')[-1]
             image_id = remote_filename.split('.')[0]
             filename = os.path.join(ORIGINAL_IMG_DIR, remote_filename)
-            if os.path.exists(filename):
-                print("Image has been downloaded previously.")                
-            else:
-                local_image_name = download_url_image(url, filename)
-                outname =  datetime.now().strftime("%m%d%Y%H%M%S%f")+f"({image_id}).png"
-                seq = arnold_cat_map(filename=local_image_name, outname=os.path.join(FINAL_IMG_DIR, outname), retain_final=retain_finals, image_key=image_id, sequence_id=sequence_id, append_to_text_file=txt_file)
-                db.create_image(seq)
-                total_bits_generated = total_bits_generated + len(seq)
-                image_paths.append(seq.outname)
-                if not retain_originals:
-                    os.remove(local_image_name)
+            local_image_name = download_url_image(url, filename)
+            outname =  datetime.now().strftime("%m%d%Y%H%M%S%f")+f"({image_id}).png"
+            seq = arnold_cat_map(filename=local_image_name, outname=os.path.join(FINAL_IMG_DIR, outname), retain_final=retain_finals, image_key=image_id, sequence_id=sequence_id, append_to_text_file=txt_file)
+            db.create_image(seq)
+            total_bits_generated = total_bits_generated + len(seq)
+            image_paths.append(seq.outname)
+            if not retain_originals:
+                os.remove(local_image_name)
             if total_bits_generated >= sequence_length:
                 terminate_loop = True
                 break
     except KeyError as e:
-        print('DOES NOT CONTAIN MEDIA')
-        pass
+        logging.warning('DOES NOT CONTAIN MEDIA')
 
 time_elapsed = time() - start_time
 bit_rate = total_bits_generated / time_elapsed
 db.end_sequence(sequence_id, total_bits_generated, time_elapsed, bit_rate, datetime.now())
-print("\nGenerated: ")
+logging.info("\nGenerated: ")
 for i in image_paths:
-    print(i)
-print(f"({total_bits_generated} bits) in {time_elapsed} sec. {total_bits_generated / time_elapsed} bits/sec")
+    logging.info(i)
+logging.info(f"({total_bits_generated} bits) in {time_elapsed} sec. {total_bits_generated / time_elapsed} bits/sec")

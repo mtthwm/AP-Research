@@ -1,0 +1,10 @@
+DEBUG:urllib3.connectionpool:Starting new HTTPS connection (1): api.twitter.com:443
+DEBUG:urllib3.connectionpool:https://api.twitter.com:443 "GET /2/tweets/search/stream/rules HTTP/1.1" 200 150
+DEBUG:urllib3.connectionpool:https://api.twitter.com:443 "POST /2/tweets/search/stream/rules HTTP/1.1" 200 101
+DEBUG:urllib3.connectionpool:https://api.twitter.com:443 "POST /2/tweets/search/stream/rules HTTP/1.1" 201 181
+DEBUG:urllib3.connectionpool:https://api.twitter.com:443 "GET /2/tweets/search/stream?expansions=attachments.media_keys&media.fields=url& HTTP/1.1" 200 None
+WARNING:root:DOES NOT CONTAIN MEDIA
+DEBUG:urllib3.connectionpool:Starting new HTTPS connection (1): pbs.twimg.com:443
+DEBUG:urllib3.connectionpool:https://pbs.twimg.com:443 "GET /media/EyW_zu5WQAAQ6FE.jpg HTTP/1.1" 200 217281
+ERROR:root:Uncaught exception: name 'logging' is not defined
+NoneType: None

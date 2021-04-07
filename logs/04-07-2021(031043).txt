@@ -1,0 +1,7 @@
+INFO:root:Generated images/final/04072021031044229344(EyXC_fgUcAE-Kq7).png (12996 bits) in 0.5507888793945312 ms. 23595.24762788636 bit/sec
+INFO:root:Generated images/final/04072021031046249895(EyWzhQCWUAEujpR).png (44100 bits) in 1.8638877868652344 ms. 23660.22263291357 bit/sec
+INFO:root:
+Generated: 
+INFO:root:images/final/04072021031044229344(EyXC_fgUcAE-Kq7).png
+INFO:root:images/final/04072021031046249895(EyWzhQCWUAEujpR).png
+INFO:root:(57096 bits) in 4.427749395370483 sec. 12895.038743542667 bits/sec

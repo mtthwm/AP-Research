@@ -5,6 +5,7 @@ import requests
 from memory_profiler import profile
 from time import time
 from datetime import datetime
+import logging
 
 def download_url_image (url, filename):
     r = requests.get(url, stream=True)
@@ -103,7 +104,7 @@ def arnold_cat_map (filename:str, outname:str, retain_final:bool, image_key:str,
         zag.save(outname)
 
     seq = GeneratedSequence(outname=outname, length=bits_generated, generation_time=time() - start_time, image_key=image_key, sequence_id=sequence_id)
-    print(f"Generated {seq.outname} ({len(seq)} bits) in {seq.generation_time} ms. {seq.bit_rate} bit/sec")
+    logging.info(f"Generated {seq.outname} ({len(seq)} bits) in {seq.generation_time} ms. {seq.bit_rate} bit/sec")
     return seq
 
 
