@@ -13,7 +13,7 @@ from utils.CommandLineArgs import CommandLineArgs
 from concurrent.futures import ThreadPoolExecutor
 from utils.Database import Database
 import logging
-logging.basicConfig(filename=os.path.join('logs/', datetime.now().strftime("%m-%d-%Y(%H%M%S)") + ".txt"), level=logging.INFO)
+logging.basicConfig(filename=os.path.join('logs/', datetime.now().strftime("%m-%d-%Y(%H%M%S)") + ".txt"), level=logging.DEBUG)
 logging.getLogger().addHandler(logging.StreamHandler()) #https://stackoverflow.com/questions/13733552/logger-configuration-to-log-to-file-and-print-to-stdout
 
 db = Database(os.getenv('LOG_DB_NAME'))
@@ -37,7 +37,7 @@ FINAL_IMG_DIR = 'images/final/'
 twitter = TwitterAPI(os.getenv('TWITTER_API_BEARER_TOKEN'))
 
 twitter.clear_rules()
-twitter.add_rule('Posts with images', f'#{hashtag}', has=['images'])
+twitter.add_rule('Posts with images', f'#{hashtag} -is:retweet -is:reply has:images')
 
 tweet_stream = twitter.open_stream(expansions='attachments.media_keys', media__fields=['url'])
 
@@ -53,6 +53,7 @@ executor = ThreadPoolExecutor()
 terminate_loop = False
 
 for x in tweet_stream:
+    logging.debug(x)
     if terminate_loop:
         break
     try:
