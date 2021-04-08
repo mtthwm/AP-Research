@@ -45,4 +45,13 @@ class Database:
         self.cur.execute('''UPDATE sequence SET bits_generated=?, generation_time=?, bit_rate=?, time_finished=? WHERE id=?''', (bits_generated, generation_time, bit_rate, time_finished, id))
         self.conn.commit()
         return self.cur.lastrowid
+
+    def flush (self):
+        if input(f'Doing this will IRREVERSIBLY DESTORY all logs in the database {self.filename}. Are you sure? Y/N ') in ('Yes', 'y', 'Y'):
+            self.cur.execute('''DELETE FROM image''')
+            self.cur.execute('''DELETE FROM sequence''')
+            self.conn.commit()
+            print('Database flushed.')
+        else:
+            print('Cancelled database flush.')
     
