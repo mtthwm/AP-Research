@@ -6,4 +6,5 @@ images/final/*
 images/originals/*
 data/*
 generator-log.db
+generator-log copy.db
 logs/*
