@@ -18,6 +18,9 @@ logging.getLogger().addHandler(logging.StreamHandler()) #https://stackoverflow.c
 
 db = Database(os.getenv('LOG_DB_NAME'))
 
+EXCEPTION_THRESHOLD = 500
+total_exceptions = 0
+
 def log_exception_handler (type, value, tb):
     logging.exception(f"Uncaught exception: {str(value)}")
 
@@ -58,21 +61,27 @@ for x in tweet_stream:
         break
     try:
         for y in x['includes']['media']:
-            url = y['url']
-            remote_filename = url.split('/')[-1]
-            image_id = remote_filename.split('.')[0]
-            filename = os.path.join(ORIGINAL_IMG_DIR, remote_filename)
-            local_image_name = download_url_image(url, filename)
-            outname =  datetime.now().strftime("%m%d%Y%H%M%S%f")+f"({image_id}).png"
-            seq = arnold_cat_map(filename=local_image_name, outname=os.path.join(FINAL_IMG_DIR, outname), retain_final=retain_finals, image_key=image_id, sequence_id=sequence_id, append_to_text_file=txt_file)
-            db.create_image(seq)
-            total_bits_generated = total_bits_generated + len(seq)
-            image_paths.append(seq.outname)
-            if not retain_originals:
-                os.remove(local_image_name)
-            if total_bits_generated >= sequence_length:
-                terminate_loop = True
-                break
+            try:
+                url = y['url']
+                remote_filename = url.split('/')[-1]
+                image_id = remote_filename.split('.')[0]
+                filename = os.path.join(ORIGINAL_IMG_DIR, remote_filename)
+                local_image_name = download_url_image(url, filename)
+                outname =  datetime.now().strftime("%m%d%Y%H%M%S%f")+f"({image_id}).png"
+                seq = arnold_cat_map(filename=local_image_name, outname=os.path.join(FINAL_IMG_DIR, outname), retain_final=retain_finals, image_key=image_id, sequence_id=sequence_id, append_to_text_file=txt_file)
+                db.create_image(seq)
+                total_bits_generated = total_bits_generated + len(seq)
+                image_paths.append(seq.outname)
+                if not retain_originals:
+                    os.remove(local_image_name)
+                if total_bits_generated >= sequence_length:
+                    terminate_loop = True
+                    break
+            except Exception as e:
+                logging.warning(e)
+                total_exceptions += 1
+                if total_exceptions > EXCEPTION_THRESHOLD:
+                    raise Exception("EXCEPTION THRESHOLD EXCEEDED!")
     except KeyError as e:
         logging.warning('DOES NOT CONTAIN MEDIA')
 
