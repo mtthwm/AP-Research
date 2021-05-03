@@ -2,7 +2,6 @@ import shutil
 import os
 from PIL import Image
 import requests
-from memory_profiler import profile
 from time import time
 from datetime import datetime
 import logging
