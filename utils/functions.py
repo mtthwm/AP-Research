@@ -16,7 +16,14 @@ def download_url_image (url, filename):
 def check_image_downloaded_previously(filename):
     return os.path.exists(filename)
 
-def arnold_cat_map (filename:str, outname:str, retain_final:bool, image_key:str, sequence_id:int, append_to_text_file=None):
+def append_to_file_name(path, value):
+    splits = path.rsplit('.', 1)
+    final = splits[0] + value + "." + splits[1]
+    print(final, "LOOK HERE")
+    return final
+
+
+def arnold_cat_map (filename:str, outname:str, retain_final:bool, image_key:str, sequence_id:int, append_to_text_file=None, retain_steps=False):
     start_time = time()
     bits_generated = 0
 
@@ -24,12 +31,20 @@ def arnold_cat_map (filename:str, outname:str, retain_final:bool, image_key:str,
     q = 1
 
     original = Image.open(filename).convert('1')
+    if retain_steps:
+        fn = append_to_file_name(outname, "BINARY")
+        original.save(fn)
+
     size = min((original.height, original.width))
     top = 0
     bottom = size - (size % 4)
     left = 0
     right = size - (size % 4)
     original = original.crop((left, top, right, bottom))
+
+    if retain_steps:
+        fn = append_to_file_name(outname, "CROPPED")
+        original.save(fn)
 
     new = Image.new('1', (original.width, original.height))
 
@@ -40,6 +55,10 @@ def arnold_cat_map (filename:str, outname:str, retain_final:bool, image_key:str,
             newX = (x + y * p) % N
             newY = (x * q + y * (p * q + 1)) % N
             new.putpixel((newX, newY), px)
+
+    if retain_steps:
+        fn = append_to_file_name(outname, "MAPPED")
+        new.save(fn)
 
     count_width = int(original.width / 4)
     count_height = int(original.height / 4)
@@ -55,8 +74,12 @@ def arnold_cat_map (filename:str, outname:str, retain_final:bool, image_key:str,
                 pix_sum += add
             count.putpixel((int(x / 4), int(y / 4)),
                            1 if pix_sum % 2 == 0 else 0)
+    
+    if retain_steps:
+        fn = append_to_file_name(outname, "SUMS")
+        count.save(fn)
 
-    if retain_final:
+    if retain_final or retain_steps:
         zag = Image.new('1', (count.height, count.width))
 
     x = 0
@@ -72,7 +95,7 @@ def arnold_cat_map (filename:str, outname:str, retain_final:bool, image_key:str,
         bits_generated += 1
         if file:
             file.write(str(pix))
-        if retain_final:
+        if retain_final or retain_steps:
             zag.putpixel((i % count.width, int(i / count.width)), pix)
 
         doSwapY = y - yDir < 0 or y - yDir >= count.height
@@ -99,7 +122,7 @@ def arnold_cat_map (filename:str, outname:str, retain_final:bool, image_key:str,
 
     if file:
         file.close()
-    if retain_final:
+    if retain_final or retain_steps:
         zag.save(outname)
 
     seq = GeneratedSequence(outname=outname, length=bits_generated, generation_time=time() - start_time, image_key=image_key, sequence_id=sequence_id)
