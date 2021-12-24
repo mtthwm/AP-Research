@@ -27,8 +27,8 @@ def arnold_cat_map (filename:str, outname:str, retain_final:bool, image_key:str,
     start_time = time()
     bits_generated = 0
 
-    p = 1
-    q = 1
+    p = 34
+    q = 7
 
     original = Image.open(filename).convert('1')
     if retain_steps:
